@@ -1,4 +1,5 @@
 alias edith='sudo vim /etc/hosts'
+alias editp='vim ~/.bash_profile'
 alias cds='cd ~/Sites'
 alias cdn='cd ~/Notes'
 alias cdwp='cd ~/Sites/personal/vagrant-local/www/'
@@ -12,6 +13,7 @@ alias wpup='docker-compose -f docker-compose.yml -f admin-compose.yml up'
 # Point to current work folder
 alias cdc='cd ~/Sites/clients'
 alias cdi='cd ~/Sites/internal'
+alias cdb='cd ~/Sites/sandbox'
 
 # Load RVM into a shell session *as a function*
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
@@ -52,3 +54,9 @@ export PATH=$PATH:$HOME/.vv
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/craigf/Downloads/google-cloud-sdk/path.bash.inc' ]; then source '/Users/craigf/Downloads/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/craigf/Downloads/google-cloud-sdk/completion.bash.inc' ]; then source '/Users/craigf/Downloads/google-cloud-sdk/completion.bash.inc'; fi
