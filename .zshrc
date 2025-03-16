@@ -1,11 +1,11 @@
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
-# Path to your oh-my-zsh installation.
+# Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
+# load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="robbyrussell"
@@ -85,15 +85,18 @@ source $ZSH/oh-my-zsh.sh
 # if [[ -n $SSH_CONNECTION ]]; then
 #   export EDITOR='vim'
 # else
-#   export EDITOR='mvim'
+#   export EDITOR='nvim'
 # fi
 
 # Compilation flags
-# export ARCHFLAGS="-arch x86_64"
+# export ARCHFLAGS="-arch $(uname -m)"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
+# Set personal aliases, overriding those provided by Oh My Zsh libs,
+# plugins, and themes. Aliases can be placed here, though Oh My Zsh
+# users are encouraged to define aliases within a top-level file in
+# the $ZSH_CUSTOM folder, with .zsh extension. Examples:
+# - $ZSH_CUSTOM/aliases.zsh
+# - $ZSH_CUSTOM/macos.zsh
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
@@ -109,18 +112,16 @@ alias wport='lsof -i'
 
 # Point to work folder
 alias cdc='cd ~/Code'
-alias cdi='cd ~/Code/internal'
+alias cdf='cd ~/Code/freelance'
 alias cdp='cd ~/Code/personal'
 alias cds='cd ~/Code/sandbox'
-alias cdg='cd ~/go/src/github.com/sendgrid'
 
-export BOOTSTRAP_SCRIPT_DIR=/Users/cfree/Code/internal/sendgrid/sg-workstation/scripts
-alias golandopen='open -a "/Applications/GoLand.app" "."'
+# alias golandopen='open -a "/Applications/GoLand.app" "."'
 export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
-export GOPATH=$HOME/go:$HOME/workspace/go
-export GOBIN=$GOPATH/bin
-export PATH=$PATH:$GOBIN
-export GOPRIVATE=github.com/sendgrid/*,github.com/sendgrid-ops/*,code.hq.twilio.com/*
+# export GOPATH=$HOME/go:$HOME/workspace/go
+# export GOBIN=$GOPATH/bin
+# export PATH=$PATH:$GOBIN
+# export GOPRIVATE=github.com/sendgrid/*,github.com/sendgrid-ops/*,code.hq.twilio.com/*
 
 # NVM Bash Completion
 #export NVM_DIR="$HOME/.nvm"
@@ -139,6 +140,7 @@ export NVM_DIR="$HOME/.nvm"
 
 # autoload -Uz compinit && compinit
 
+# brew install zsh-completions
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 
@@ -147,12 +149,36 @@ if type brew &>/dev/null; then
 fi
 
 # Load version control information
-# autoload -Uz vcs_info
-# precmd() { vcs_info }
+autoload -Uz vcs_info
+precmd() { vcs_info }
+
+function git_branch_name()
+{
+  branch=$(git symbolic-ref HEAD 2> /dev/null | awk 'BEGIN{FS="/"} {print $NF}')
+  if [[ $branch == "" ]];
+  then
+    :
+  else
+    echo '('$branch') '
+  fi
+}
+
+# Config for prompt. PS1 synonym.
+prompt='%2/ $(git_branch_name) > '
 
 # Format the vcs_info_msg_0_ variable
 zstyle ':vcs_info:git:*' formats '%b '
 setopt PROMPT_SUBST
-export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
-export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
-eval "$(pyenv init -)"
+
+PROMPT='%F{white}%n@%m %F{10}%1d %F{11}$(git_branch_name)%F{white}$ '
+
+# export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+# export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+# eval "$(pyenv init -)"
+
+function onbehalf {
+  [ -z "$1" ] && echo "Enter a valid user ID" && return 1
+  payload='{"version": 1,"subject_type"="user","subject_id": "'$1'","sso_connection_id":"","is_mfa":false}'
+  openssl enc -A -base64 <<< $payload
+}
+
